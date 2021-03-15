@@ -35,7 +35,7 @@ class AuthController extends Controller
             ], 401);
         }
 
-//        $request->session()->regenerate();
+        $request->session()->regenerate();
 
         $token = $user->createToken('pelajar-'.$request->session()->regenerate(), ['akun:pelajar']);
         return response()->json([
@@ -93,9 +93,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-//        \auth()->guard('web')->logout();
-//        $request->session()->invalidate();
-//        $request->session()->regenerateToken();
+        \auth()->guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         $user = $request->user();
         $user->tokens()->where('tokenable_id', $user->id)->delete();
