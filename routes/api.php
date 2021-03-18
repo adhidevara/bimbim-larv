@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\MitraController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,9 @@ Route::prefix('user')->group(function (){
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/detailUser', [AuthController::class, 'detailUser']);
     });
+});
+Route::prefix('mitra')->group(function (){
+    Route::get('/getMitra', [MitraController::class, 'getMitra']);
 });
 
 

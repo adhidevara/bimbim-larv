@@ -36,7 +36,7 @@ class Pelajar extends Model
      */
     public function user()
     {
-        return $this->belongsTo('App\Models\User');
+        return $this->belongsTo('App\Models\User', 'id_user', 'id_user');
     }
 
 //    public function orders()
