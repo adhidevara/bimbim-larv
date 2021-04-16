@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\DaerahController;
+use App\Http\Controllers\Api\PriceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -26,7 +28,18 @@ Route::prefix('user')->group(function (){
     });
 });
 Route::prefix('mitra')->group(function (){
-    Route::get('/getMitra', [MitraController::class, 'getMitra']);
+    Route::get('/getGuru', [MitraController::class, 'getGuru']);
+    Route::get('/detailGuru/{id}', [MitraController::class, 'detailGuru']);
+    Route::post('/regisMitra', [MitraController::class, 'regisMitra']);
+});
+Route::prefix('price')->group(function (){
+    Route::post('/getPrice', [PriceController::class, 'getPrice']);
+});
+Route::prefix('daerah')->group(function (){
+    Route::get('/getProvinsi', [DaerahController::class, 'getProvinsi']);
+    Route::get('/getKota/{id}', [DaerahController::class, 'getKota']);
+    Route::get('/getKecamatan/{id}', [DaerahController::class, 'getKecamatan']);
+    Route::get('/getKelurahan/{id}', [DaerahController::class, 'getKelurahan']);
 });
 
 

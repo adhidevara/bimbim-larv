@@ -32,6 +32,7 @@ class Mitra extends Model
         'jk',
         'institusi', 'prodi', 'ipk', 'status_studi',
         'deskripsi',
+        'slug',
         'foto',
         'video',
         'cv',
@@ -57,4 +58,17 @@ class Mitra extends Model
     {
         return $this->belongsTo('App\Models\User', 'id_user', 'id');
     }
+
+    public function review()
+    {
+        return $this->hasMany('App\Models\Review', 'id_mitra', 'id_mitra');
+    }
+
+    public function mapelUnggulan()
+    {
+        return $this->hasMany('App\Models\MapelUnggulan', 'id_mitra', 'id_mitra');
+    }
+
+
+
 }

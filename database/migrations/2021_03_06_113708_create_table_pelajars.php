@@ -17,7 +17,7 @@ class CreateTablePelajars extends Migration
             $table->bigIncrements('id_pelajar');
             $table->bigInteger('id_user')->nullable()->unsigned();
             $table->string('nama')->default(NULL);
-            $table->enum('pendidikan', ['sd', 'smp', 'sma'])->nullable()->default(NULL);
+            $table->enum('pendidikan', ['sd', 'smp', 'sma-10', 'sma-11', 'sma-12'])->nullable()->default(NULL);
             $table->string('no_telepon', 20)->nullable()->default(NULL);
             $table->string('email', 50)->nullable()->default(NULL)->unique();
             $table->string('password', 255);

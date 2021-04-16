@@ -39,13 +39,8 @@ class Pelajar extends Model
         return $this->belongsTo('App\Models\User', 'id_user', 'id_user');
     }
 
-//    public function orders()
-//    {
-//        return $this->hasMany('App\Order', 'Id_Konsumen');
-//    }
-//
-//    public function payment()
-//    {
-//        return $this->hasManyThrough('App\Payment', 'App\Order', 'Id_Konsumen', 'Id_Pembayaran');
-//    }
+    public function review()
+    {
+        return $this->hasMany('App\Models\Review', 'id_pelajar', 'id_pelajar');
+    }
 }
