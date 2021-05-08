@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\DaerahController;
+use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\PriceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,10 @@ Route::prefix('mitra')->group(function (){
     Route::get('/getGuru', [MitraController::class, 'getGuru']);
     Route::get('/detailGuru/{id}', [MitraController::class, 'detailGuru']);
     Route::post('/regisMitra', [MitraController::class, 'regisMitra']);
+});
+Route::prefix('event')->group(function (){
+    Route::get('/getEvent', [EventController::class, 'getEvent']);
+    Route::get('/detailEvent/{id}', [EventController::class, 'detailEvent']);
 });
 Route::prefix('price')->group(function (){
     Route::post('/getPrice', [PriceController::class, 'getPrice']);

@@ -17,16 +17,17 @@ class DatabaseSeeder extends Seeder
 
             BidangTableSeeder::class,
             HargaTableSeeder::class,
-            ProvinsiTableSeeder::class,
-            KotaTableSeeder::class,
-            KecamatanTableSeeder::class,
-            KelurahanTableSeeder::class,
 
-            //Optional Callable
-            MitraTableSeeder::class,
-            PelajarTableSeeder::class,
-            ReviewTableSeeder::class,
-            MapelUnggulanTableSeeder::class,
+
+//            Optional Callable
+//            ProvinsiTableSeeder::class,
+//            KotaTableSeeder::class,
+//            KecamatanTableSeeder::class,
+//            KelurahanTableSeeder::class,
+//            MitraTableSeeder::class,
+//            PelajarTableSeeder::class,
+//            ReviewTableSeeder::class,
+//            MapelUnggulanTableSeeder::class,
         ]);
     }
 }

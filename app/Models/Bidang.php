@@ -34,4 +34,9 @@ class Bidang extends Model
     {
         return $this->hasMany('App\Models\Mitra', 'id_bidang', 'id_bidang');
     }
+
+    public function event()
+    {
+        return $this->hasMany('App\Models\Event', 'id_bidang', 'id_bidang');
+    }
 }
