@@ -32,6 +32,7 @@ Route::prefix('mitra')->group(function (){
     Route::get('/getGuru', [MitraController::class, 'getGuru']);
     Route::get('/detailGuru/{id}', [MitraController::class, 'detailGuru']);
     Route::post('/regisMitra', [MitraController::class, 'regisMitra']);
+    Route::get('/test', [MitraController::class, 'test']);
 });
 Route::prefix('event')->group(function (){
     Route::get('/getEvent', [EventController::class, 'getEvent']);

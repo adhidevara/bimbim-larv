@@ -23,19 +23,12 @@ class Mitra extends Model
      * atribut yang dapat diisi
      */
     protected $fillable = [
-        'id_mitra', 'id_bidang',
-        'nama',
-        'no_telepon',
-        'email',
-        'kota', 'provinsi', 'alamat',
-        'tgl_lahir',
-        'jk',
+        'id_mitra', 'id_user', 'id_bidang',
+        'nama', 'no_telepon', 'email', 'tgl_lahir', 'jk',
+        'kota', 'kecamatan', 'kelurahan', 'provinsi', 'alamat', 'kode_pos',
         'institusi', 'prodi', 'ipk', 'status_studi',
-        'deskripsi',
-        'slug',
-        'foto',
-        'video',
-        'cv',
+        'title', 'deskripsi', 'tarif', 'slug',
+        'foto', 'video', 'cv',
         'is_verified'
     ];
 

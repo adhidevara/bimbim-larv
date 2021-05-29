@@ -3,13 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Pelajar;
+use App\Models\MapelUnggulan;
 use App\Models\Mitra;
+use Cassandra\Map;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Str;
 use Validator;
 
@@ -101,11 +103,21 @@ class MitraController extends Controller
 
     public function regisMitra(Request $request)
     {
+        //INPUT FROM USER
         $input = $request->post();
 
-        $reYTID = '/(?im)\b(?:https?:\/\/)?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)\/(?:(?:\??v=?i?=?\/?)|watch\?vi?=|watch\?.*?&v=|embed\/|)([A-Z0-9_-]{11})\S*(?=\s|$)/';
-        preg_match_all($reYTID, $input['video'], $matches, PREG_SET_ORDER, 0);
-        $getID = $matches[0][1];
+        //VALIDATION
+        $input['bidang'] = ($input['bidang'] == 'BIM GURU') ? 1 : 2;
+
+        error_reporting(0);
+        if (!$input['video'] == null){
+            $reYTID = '/(?im)\b(?:https?:\/\/)?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)\/(?:(?:\??v=?i?=?\/?)|watch\?vi?=|watch\?.*?&v=|embed\/|)([A-Z0-9_-]{11})\S*(?=\s|$)/';
+            preg_match_all($reYTID, $input['video'], $matches, PREG_SET_ORDER, 0);
+            $getID = $matches[0][1];
+        }
+        else{
+            $getID = null;
+        }
 
         $validation = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -124,9 +136,11 @@ class MitraController extends Controller
             'kodePos' => 'required',
             'prodi' => 'required',
             'status_studi' => 'required',
+            'tarif' => 'numeric',
+            'mapel_unggulan' => 'required',
             'tanggal' => 'required|date',
             'title' => 'required',
-            'video' => ['required', 'regex:/http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/'],
+            //'video' => ['regex:/http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/'],
             'password' => 'required|min:6|same:c_password',
             'c_password' => 'required|min:6|same:password',
         ]);
@@ -137,57 +151,108 @@ class MitraController extends Controller
                 'data' => $validation->errors()
             ], 401);
         }
+        //END VALIDATION
 
-//        $foto = $request->file('foto');
-//        $sizeFt = $foto->getSize();
-//        $extTypeFt = $foto->getClientOriginalExtension();
-//        if ($sizeFt >= 2000000){
-//            return response()->json([
-//                'message' => 'error',
-//                'data' => 'Size over limit min.2MB'
-//            ], 401);
-//        }
-//        if (!$extTypeFt == 'jpg'  ||
-//            !$extTypeFt == 'jpeg' ||
-//            !$extTypeFt == 'png'  ||
-//            !$extTypeFt == 'JPG'  ||
-//            !$extTypeFt == 'JPEG' ||
-//            !$extTypeFt == 'PNG'
-//        ){
-//            return response()->json([
-//                'message' => 'error',
-//                'data' => 'Format Salah, harus JPG, JPEG, PNG',
-//            ], 401);
-//        }
-//        $filenameWithExtFt = $foto->getClientOriginalName();
-//        $filenameFt = pathinfo($filenameWithExtFt, PATHINFO_FILENAME);
-//        $filenameSimpanFt = $filenameFt.'_'.time().'.'.$extTypeFt;
-//        $pathFoto = $foto->storeAs('public/mitra_image', $filenameSimpanFt);
-//
-//
-//        $cv = $request->file('cv');
-//        $sizecv = $cv->getSize();
-//        $extTypecv = $cv->getClientOriginalExtension();
-//        if ($sizecv >= 2000000){
-//            return response()->json([
-//                'message' => 'error',
-//                'data' => 'Size over limit min.2MB'
-//            ], 401);
-//        }
-//        if (!$extTypecv == 'pdf'){
-//            return response()->json([
-//                'message' => 'error',
-//                'data' => 'Format Salah, harus PDF',
-//            ], 401);
-//        }
-//        $filenameWithExtcv = $cv->getClientOriginalName();
-//        $filenamecv = pathinfo($filenameWithExtcv, PATHINFO_FILENAME);
-//        $filenameSimpancv = $filenamecv.'_'.time().'.'.$extTypecv;
-//        $pathcv = $cv->storeAs('public/mitra_cv', $filenameSimpancv);
+        //UPLOAD IMAGE & CV
+        $foto = $request->file('foto');
+        $sizeFt = $foto->getSize();
+        $extTypeFt = $foto->getClientOriginalExtension();
+        if ($sizeFt >= 2000000){
+            return response()->json([
+                'message' => 'error',
+                'data' => 'Size over limit min.2MB'
+            ], 401);
+        }
+        if (!$extTypeFt == 'jpg'  ||
+            !$extTypeFt == 'jpeg' ||
+            !$extTypeFt == 'png'  ||
+            !$extTypeFt == 'JPG'  ||
+            !$extTypeFt == 'JPEG' ||
+            !$extTypeFt == 'PNG'
+        ){
+            return response()->json([
+                'message' => 'error',
+                'data' => 'Format file salah, harus JPG, JPEG, PNG',
+            ], 401);
+        }
+        $filenameWithExtFt = $foto->getClientOriginalName();
+        $filenameFt = pathinfo($filenameWithExtFt, PATHINFO_FILENAME);
+        $filenameSimpanFt = md5($filenameFt).'_'.time().'.'.$extTypeFt;
+        $pathFoto = $foto->storeAs('public/mitra_image', $filenameSimpanFt);
 
+
+        $cv = $request->file('cv');
+        $sizecv = $cv->getSize();
+        $extTypecv = $cv->getClientOriginalExtension();
+        if ($sizecv >= 2000000){
+            return response()->json([
+                'message' => 'error',
+                'data' => 'Size over limit min.2MB'
+            ], 401);
+        }
+        if (!$extTypecv == 'pdf'){
+            return response()->json([
+                'message' => 'error',
+                'data' => 'Format file salah, harus PDF',
+            ], 401);
+        }
+        $filenameWithExtcv = $cv->getClientOriginalName();
+        $filenamecv = pathinfo($filenameWithExtcv, PATHINFO_FILENAME);
+        $filenameSimpancv = md5($filenamecv).'_'.time().'.'.$extTypecv;
+        $pathcv = $cv->storeAs('public/mitra_cv', $filenameSimpancv);
+        //END UPLOAD IMAGE & CV
+
+        //STORE DATA TO DB
+        $generated_token = hash('sha256', Str::random(40).$input['email']);
+        $verification_token = $generated_token;
+
+        $input['password'] = Hash::make($input['password']);
+        $user = User::create($input);
+        $mitra = new Mitra();
+        $mitra->id_user       = $user->id;
+        $mitra->id_bidang     = $input['bidang'];
+        $mitra->nama          = $input['nama'];
+        $mitra->no_telepon    = $input['no_telepon'];
+        $mitra->email         = $input['email'];
+        $mitra->password      = $input['password'];
+        $mitra->tgl_lahir     = $input['tanggal'];
+        $mitra->jk            = $input['jk'];
+        $mitra->kota          = $input['kota'];
+        $mitra->kecamatan     = $input['kecamatan'];
+        $mitra->kelurahan     = $input['kelurahan'];
+        $mitra->provinsi      = $input['provinsi'];
+        $mitra->alamat        = $input['alamat'];
+        $mitra->kode_pos      = $input['kodePos'];
+        $mitra->institusi     = $input['institusi'];
+        $mitra->prodi         = $input['prodi'];
+        $mitra->ipk           = $input['ipk'];
+        $mitra->status_studi  = $input['status_studi'];
+        $mitra->title         = $input['title'];
+        $mitra->deskripsi     = $input['deskripsi'];
+        $mitra->tarif         = $input['tarif'];
+        $mitra->slug          = Str::slug($input['nama']." MT".$user->id."R ".$input['title'], '-');
+        $mitra->foto          = env('BACKEND_URL').'/storage/mitra_image/'.$filenameSimpanFt;
+        $mitra->video         = $input['video'];
+        $mitra->cv            = env('BACKEND_URL').'/storage/mitra_cv/'.$filenameSimpancv;
+        $mitra->is_verified   = 0;
+        $mitra->save();
+
+        $mapel = explode(",",$request->post('mapel_unggulan'));
+        foreach ($mapel as $mpl){
+            $mapel_unggulan = new MapelUnggulan();
+            $mapel_unggulan->id_mitra = $mitra->id_mitra;
+            $mapel_unggulan->nama_mapel = $mpl;
+            $mapel_unggulan->save();
+        }
+        //END STORE DATA TO DB
+
+        //RETURN DATA TO FRONTEND
         return response()->json([
             $getID,
-            $request->post()
+            explode(",",$request->post('mapel_unggulan')),
+            env('BACKEND_URL').'/storage/mitra_image/'.$filenameSimpanFt,
+            env('BACKEND_URL').'/storage/mitra_cv/'.$filenameSimpancv,
         ], 200);
+        //END RETURN DATA TO FRONTEND
     }
 }

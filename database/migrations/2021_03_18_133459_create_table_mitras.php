@@ -35,6 +35,7 @@ class CreateTableMitras extends Migration
             $table->enum('status_studi', ['lulus', 'mahasiswa aktif', 'cuti'])->nullable()->default(NULL);
             $table->string('title')->default(NULL);
             $table->text('deskripsi')->nullable()->default(NULL);
+            $table->integer('tarif')->nullable()->default(NULL);
             $table->string('slug')->default(NULL);
             $table->string('foto')->nullable()->default(NULL);
             $table->string('video')->nullable()->default(NULL);
