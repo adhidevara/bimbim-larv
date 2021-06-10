@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\DaerahController;
 use App\Http\Controllers\Api\EventController;
 use App\Http\Controllers\Api\PriceController;
@@ -27,6 +28,9 @@ Route::prefix('user')->group(function (){
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/detailUser', [AuthController::class, 'detailUser']);
     });
+});
+Route::prefix('banner')->group(function (){
+    Route::get('/getAllBanner', [BannerController::class, 'getAllBanner']);
 });
 Route::prefix('mitra')->group(function (){
     Route::get('/getGuru', [MitraController::class, 'getGuru']);

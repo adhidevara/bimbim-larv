@@ -22,6 +22,7 @@ class MitraController extends Controller
         $mitra = Mitra::select('*')
             ->from('tb_mitras')
             ->where('id_bidang', '=', 1)
+            ->where('is_verified', '=', 1)
             ->paginate(9);
 
         $mtrs = [];
