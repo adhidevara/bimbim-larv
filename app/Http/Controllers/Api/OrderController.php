@@ -109,7 +109,6 @@ class OrderController extends Controller
         $order->id_pelajar      = $input['id_pelajar'];
         $order->id_mitra        = $input['id_mitra'];
         $order->id_bidang       = $input['id_bidang'];
-        $order->id_harga        = $harga[0]->id_harga;
         $order->waktu_bimbingan = $input['tgl_bimbingan'].' '.$input['waktu_bimbingan'];
         if ($input['id_bidang'] == 1){
             $order->tarif = $harga[0]->pendidikan;
