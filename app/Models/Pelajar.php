@@ -43,4 +43,9 @@ class Pelajar extends Model
     {
         return $this->hasMany('App\Models\Review', 'id_pelajar', 'id_pelajar');
     }
+
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order', 'id_pelajar', 'id_pelajar');
+    }
 }

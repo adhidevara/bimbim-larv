@@ -5,33 +5,29 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Harga extends Model
+class DetailOrder extends Model
 {
     use HasFactory;
 
     /**
      * Tabel yang digunakan
      */
-    protected $table = 'tb_hargas';
+    protected $table = 'tb_detail_orders';
 
     /**
      * Deklarasi custom primary key
      */
-    protected $primaryKey = 'id_harga';
+    protected $primaryKey = 'id_detail_order';
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
+     * atribut yang dapat diisi
      */
     protected $fillable = [
-        'id_harga',
-        'kota',
-        'sd', 'smp', 'sma-10', 'sma-11', 'sma-12'
+        'id_order', 'id_detail_order', 'keterangan', 'created_at', 'updated_at'
     ];
 
     public function order()
     {
-        return $this->hasMany('App\Models\Order', 'id_harga', 'id_harga');
+        return $this->belongsTo('App\Models\Order', 'id_order', 'id_order');
     }
 }

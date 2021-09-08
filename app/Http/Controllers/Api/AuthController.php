@@ -154,12 +154,21 @@ class AuthController extends Controller
     public function detailUser()
     {
         $user = Auth::user();
-        $pelajar = Pelajar::where('id_user', $user->id)
-            ->get();
+        $pelajar = Pelajar::where('id_user', $user->id)->get();
         return response()->json([
             'message' => 'success',
             'data' => $pelajar[0],
         ], 200);
+    }
+
+    public function me()
+    {
+        $user = Auth::user();
+        $pelajar = Pelajar::get()->where('id_user', $user->id);
+        return response()->json([
+            'message' => 'success',
+            'data' => $pelajar,
+        ]);
     }
 
     public function test()

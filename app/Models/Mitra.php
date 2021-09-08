@@ -57,6 +57,11 @@ class Mitra extends Model
         return $this->hasMany('App\Models\Review', 'id_mitra', 'id_mitra');
     }
 
+    public function order()
+    {
+        return $this->hasMany('App\Models\Order', 'id_mitra', 'id_mitra');
+    }
+
     public function mapelUnggulan()
     {
         return $this->hasMany('App\Models\MapelUnggulan', 'id_mitra', 'id_mitra');

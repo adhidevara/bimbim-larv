@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Harga;
 use App\Models\MapelUnggulan;
 use App\Models\Mitra;
 use Cassandra\Map;
@@ -17,10 +18,11 @@ use Validator;
 
 class MitraController extends Controller
 {
-    public function getGuru(Request $request)
+    public function getGuru()
     {
         $mitra = Mitra::select('*')
             ->from('tb_mitras')
+            ->with('mapelUnggulan')
             ->where('id_bidang', '=', 1)
             ->where('is_verified', '=', 1)
             ->paginate(9);
@@ -49,7 +51,45 @@ class MitraController extends Controller
                 'per_page'      => $mitra->perPage(),
                 'total'         => $mitra->total(),
             ],
-            'data' => $mtrs
+            'data' => $mitra
+        ],200);
+    }
+
+    public function getPelatih()
+    {
+        $mitra = Mitra::select('*')
+            ->from('tb_mitras')
+            ->with('mapelUnggulan')
+            ->where('id_bidang', '=', 2)
+            ->where('is_verified', '=', 1)
+            ->paginate(9);
+
+        $mtrs = [];
+        foreach ($mitra as $mtr) {
+            $mtrs[] = [
+                'id_mitra' => $mtr->id_mitra,
+                'id_bidang' => $mtr->id_bidang,
+                'id_user' => $mtr->id_user,
+                'nama' => $mtr->nama,
+                'kota' => $mtr->kota,
+                'title' => $mtr->title,
+                'foto' => $mtr->foto,
+                'tarif' => $mtr->tarif,
+                'slug' => $mtr->slug,
+                'is_verified' => $mtr->is_verified,
+            ];
+        }
+
+        return response()->json([
+            'message' => 'success',
+            'meta' => [
+                'current_page'  => $mitra->currentPage(),
+                'last_page'     => $mitra->lastPage(),
+                'path'          => $mitra->path(),
+                'per_page'      => $mitra->perPage(),
+                'total'         => $mitra->total(),
+            ],
+            'data' => $mitra
         ],200);
     }
 
@@ -72,6 +112,10 @@ class MitraController extends Controller
                 'data' => $mitra
             ], 404);
         }
+        error_reporting(0);
+        $reYTID = '/(?im)\b(?:https?:\/\/)?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)\/(?:(?:\??v=?i?=?\/?)|watch\?vi?=|watch\?.*?&v=|embed\/|)([A-Z0-9_-]{11})\S*(?=\s|$)/';
+        preg_match_all($reYTID, $mitra[0]->video, $matches, PREG_SET_ORDER, 0);
+        $getID = $matches[0][1];
 
         if ($mitra[0]->review->isEmpty() || $cntData == 0){
             return response()->json([
@@ -79,6 +123,7 @@ class MitraController extends Controller
                 'meta' => [
                     'rate' => 0,
                     'jmlUlasan' => 0,
+                    'videoID' => $getID,
                 ],
                 'data' => $mitra
             ], 200);
@@ -96,9 +141,65 @@ class MitraController extends Controller
            'message' => 'success',
            'meta'    => [
                'rate' => $rate,
-               'jmlUlasan' => $cntData
+               'jmlUlasan' => $cntData,
+               'videoID' => $getID,
            ],
            'data'   => $mitra
+        ], 200);
+    }
+
+    public function detailPelatih($id)
+    {
+        $mitra = Mitra::select()
+            ->with('user')
+            ->with('bidang')
+            ->with('review')
+            ->with('mapelUnggulan')
+            ->where('id_bidang', '=', 2)
+            ->where('slug', '=', $id)
+            ->get();
+
+        $cntData = count($mitra[0]->review);
+
+        if ($mitra->isEmpty()){
+            return response()->json([
+                'message' => 'Not Found',
+                'data' => $mitra
+            ], 404);
+        }
+        error_reporting(0);
+        $reYTID = '/(?im)\b(?:https?:\/\/)?(?:w{3}\.)?youtu(?:be)?\.(?:com|be)\/(?:(?:\??v=?i?=?\/?)|watch\?vi?=|watch\?.*?&v=|embed\/|)([A-Z0-9_-]{11})\S*(?=\s|$)/';
+        preg_match_all($reYTID, $mitra[0]->video, $matches, PREG_SET_ORDER, 0);
+        $getID = $matches[0][1];
+
+        if ($mitra[0]->review->isEmpty() || $cntData == 0){
+            return response()->json([
+                'message' => 'success',
+                'meta' => [
+                    'rate' => 0,
+                    'jmlUlasan' => 0,
+                    'videoID' => $getID,
+                ],
+                'data' => $mitra
+            ], 200);
+        }
+        else{
+            $sumData = 0;
+            foreach ($mitra[0]->review as $rv){
+                $sumData += $rv->rate;
+            }
+            $cntData = count($mitra[0]->review);
+            $rate = $sumData/$cntData;
+        }
+
+        return response()->json([
+            'message' => 'success',
+            'meta'    => [
+                'rate' => $rate,
+                'jmlUlasan' => $cntData,
+                'videoID' => $getID,
+            ],
+            'data'   => $mitra
         ], 200);
     }
 
