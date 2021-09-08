@@ -3,7 +3,7 @@
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\DaerahController;
 use App\Http\Controllers\Api\EventController;
-use App\Http\Controllers\api\OrderController;
+use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PriceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
