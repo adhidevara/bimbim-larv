@@ -34,7 +34,7 @@ Route::prefix('user')->group(function (){
 Route::prefix('order')->group(function (){
     Route::post('/createOrder', [OrderController::class, 'createOrder']);
     Route::get('/getOrder/{id}', [OrderController::class, 'getOrder']);
-    Route::post('/checkOrder', [OrderController::class, 'checkOrder']);
+    Route::match(['get', 'post'],'/checkOrder', [OrderController::class, 'checkOrder']);
     Route::post('/uploadBuktiTf', [OrderController::class, 'uploadBuktiTf']);
 });
 Route::prefix('banner')->group(function (){
