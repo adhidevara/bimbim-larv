@@ -19,6 +19,7 @@ class BannerController extends Controller
                 'id'          => $bnr->id,
                 'nama_banner' => $bnr->nama_banner,
                 'link'        => $bnr->link,
+                'href'        => $bnr->href,
             ];
         }
 
